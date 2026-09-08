@@ -1,0 +1,14 @@
+{
+  "name": "vbee-render-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Secure Vbee TTS bridge for ChatGPT Actions and Remotion",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "check": "node --check src/server.js"
+  }
+}

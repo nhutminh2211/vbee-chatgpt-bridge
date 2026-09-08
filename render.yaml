@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: vbee-chatgpt-bridge
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm run check
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: VBEE_APP_ID
+        sync: false
+      - key: VBEE_TOKEN
+        sync: false
+      - key: BRIDGE_API_KEY
+        generateValue: true
+      - key: CALLBACK_SECRET
+        generateValue: true
+      - key: AUDIO_SIGNING_SECRET
+        generateValue: true

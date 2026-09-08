@@ -1,0 +1,84 @@
+openapi: 3.1.0
+info:
+  title: Vbee Audio Bridge
+  version: 1.0.0
+  description: Create Vietnamese voice-over audio with Vbee for video production.
+servers:
+  - url: https://REPLACE_WITH_RENDER_SERVICE_URL
+paths:
+  /v1/voices:
+    get:
+      operationId: listVbeeVoices
+      summary: List available Vbee voices
+      parameters:
+        - in: query
+          name: languageCode
+          schema: { type: string, default: vi-VN }
+        - in: query
+          name: voiceOwnership
+          schema: { type: string, enum: [VBEE, COMMUNITY, PERSONAL] }
+        - in: query
+          name: gender
+          schema: { type: string, enum: [male, female] }
+      responses:
+        "200":
+          description: Voice list
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: true }
+  /v1/speech:
+    post:
+      operationId: createVbeeSpeech
+      summary: Start a long-form text-to-speech request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text, voiceCode]
+              properties:
+                text: { type: string, maxLength: 100000 }
+                voiceCode: { type: string }
+                outputFormat: { type: string, enum: [mp3, wav], default: mp3 }
+                bitrate: { type: integer, enum: [8, 16, 32, 64, 128], default: 128 }
+                speed: { type: number, minimum: 0.25, maximum: 1.9, default: 1 }
+                sampleRate: { type: integer, enum: [8000, 16000, 22050, 24000, 32000, 44100, 48000] }
+      responses:
+        "202":
+          description: Speech request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requestId: { type: string }
+                  status: { type: string }
+                  statusUrl: { type: string, format: uri }
+  /v1/speech/{requestId}:
+    get:
+      operationId: getVbeeSpeechStatus
+      summary: Check status and obtain a signed audio URL
+      parameters:
+        - in: path
+          name: requestId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Current speech status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requestId: { type: string }
+                  status: { type: string }
+                  audioUrl: { type: string, format: uri }
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
